@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Representation</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .box {
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            background-color: pink;
+        }
+        .dark-green {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box" id="box0"></div>
+        <div class="box" id="box1"></div>
+        <div class="box" id="box2"></div>
+        <div class="box" id="box3"></div>
+        <div class="box" id="box4"></div>
+        <div class="box" id="box5"></div>
+        <div class="box" id="box6"></div>
+        <div class="box" id="box7"></div>
+    </div>
+    <input type="number" id="numberInput" min="0" max="255" placeholder="Enter a number (0-255)">
+    <button onclick="displayBinary()">Display Binary</button>
+
+    <script>
+        function displayBinary() {
+            const number = document.getElementById('numberInput').value;
+            if (number < 0 || number > 255) {
+                alert('Please enter a number between 0 and 255');
+                return;
+            }
+            const binaryString = Number(number).toString(2).padStart(8, '0');
+            for (let i = 0; i < 8; i++) {
+                const box = document.getElementById(`box${i}`);
+                box.className = binaryString[i] === '1' ? 'box dark-green' : 'box';
+            }
+        }
+    </script>
+</body>
+</html>

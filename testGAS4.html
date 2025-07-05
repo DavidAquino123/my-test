@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Docs Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        textarea, input, select, button { width: 80%; padding: 10px; font-size: 16px; margin: 10px; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>Google Docs Manager</h2>
+
+    <!-- Create New Document -->
+    <label>Folder Name:</label>
+    <input type="text" id="folderName" placeholder="Enter folder name">
+    <button onclick="createDocument()">Create New Document</button>
+
+    <!-- Append Text to Active Document -->
+    <h3>Append Text to Active Document</h3>
+    <textarea id="textArea1" placeholder="Enter first text"></textarea>
+    <textarea id="textArea2" placeholder="Enter second text"></textarea>
+    <button onclick="appendText()">Append to Active Document</button>
+
+    <!-- Select Active Document -->
+    <h3>Select Active Document</h3>
+    <select id="documentList"></select>
+    <button onclick="setActiveDocument()">Set Active Document</button>
+
+    <p id="status"></p>
+
+    <script>
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbwSVJmMB06hxF0wchYzU6X-ZdDZm4R19ovcTF3F__WGnVaNeZn0mFEhAEANRmF_E2JV/exec"; // Replace with your actual web app URL
+
+        // Create a new document in the specified folder
+        function createDocument() {
+            const folderName = document.getElementById("folderName").value;
+            fetch(webAppUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "create", folderName: folderName })
+            }).then(response => response.json())
+              .then(data => {
+                  document.getElementById("status").textContent = "Created: " + data.docName;
+                  loadDocuments(); // Refresh document list
+              })
+              .catch(error => document.getElementById("status").textContent = "Error: " + error);
+        }
+
+        // Append text from text areas to the active document
+        function appendText() {
+            const text1 = document.getElementById("textArea1").value;
+            const text2 = document.getElementById("textArea2").value;
+            fetch(webAppUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "append", text1: text1, text2: text2 })
+            }).then(response => response.text())
+              .then(data => document.getElementById("status").textContent = data)
+              .catch(error => document.getElementById("status").textContent = "Error: " + error);
+        }
+
+        // Load documents from the specified folder into the dropdown
+        function loadDocuments() {
+            const folderName = document.getElementById("folderName").value;
+            fetch(webAppUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "getDocs", folderName: folderName })
+            }).then(response => response.json())
+              .then(data => {
+                  const dropdown = document.getElementById("documentList");
+                  dropdown.innerHTML = "";
+                  data.forEach(doc => {
+                      const option = document.createElement("option");
+                      option.value = doc.id;
+                      option.textContent = doc.name;
+                      dropdown.appendChild(option);
+                  });
+              }).catch(error => document.getElementById("status").textContent = "Error: " + error);
+        }
+
+        // Set the selected document as the active document
+       
+
+        // Auto-load documents when folder name is entered
+        document.getElementById("folderName").addEventListener("input", loadDocuments);
+
+
+        function setActiveDocument() {
+    const selectedDocId = document.getElementById("documentList").value;
+    if (!selectedDocId) {
+        document.getElementById("status").textContent = "Error: No document selected.";
+        return;
+    }
+
+    fetch(webAppUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ action: "setActive", docId: selectedDocId })
+    }).then(response => response.text())
+      .then(data => {
+          document.getElementById("status").textContent = data;
+      })
+      .catch(error => document.getElementById("status").textContent = "Error: " + error);
+}
+    </script>
+
+</body>
+</html>

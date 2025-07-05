@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Springtime Squares</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .square {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            background-color: #f3f4ed;
+            display: inline-block;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 12px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #button1 {
+            background-color: #ffb6c1;
+            color: white;
+        }
+
+        #button2 {
+            background-color: #87cefa;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="square1" class="square"></div>
+        <div id="square2" class="square"></div>
+        <div class="button-container">
+            <button id="button1">Change Square 1</button>
+            <button id="button2">Change Square 2</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('button1').addEventListener('click', function() {
+            let square1 = document.getElementById('square1');
+            square1.style.backgroundColor = square1.style.backgroundColor === 'pink' ? 'lightgreen' : 'pink';
+        });
+
+        document.getElementById('button2').addEventListener('click', function() {
+            let square2 = document.getElementById('square2');
+            square2.style.backgroundColor = square2.style.backgroundColor === 'lightblue' ? 'lightcoral' : 'lightblue';
+        });
+    </script>
+</body>
+</html>

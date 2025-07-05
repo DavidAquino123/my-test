@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Google Doc</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        textarea {
+            width: 80%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Send Text to Google Doc</h2>
+    <textarea id="inputText" placeholder="Type your content here..."></textarea>
+    <button onclick="sendToGoogleDoc()">Update Doc</button>
+    <p id="status"></p>
+
+    <script>
+        function sendToGoogleDoc() {
+            var text = document.getElementById("inputText").value;
+            var url = "https://script.google.com/macros/s/AKfycbyTzt3fHE7hHcAbSaxkEFLSAKTxOvA4f6U7O7rb8dZUVSK6rIKZzbjOpm6iPYX9L2hWMg/exec"; // Replace with your actual Google Apps Script URL
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ text: text })
+            }).then(response => response.text())
+              .then(data => {
+                  document.getElementById("status").textContent = "Response: " + data;
+              })
+              .catch(error => {
+                  document.getElementById("status").textContent = "Error: " + error;
+              });
+        }
+    </script>
+</body>
+</html>

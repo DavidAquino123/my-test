@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Grid Representation</title>
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: repeat(8, 30px);
+            grid-gap: 5px;
+            margin-bottom: 20px;
+        }
+        .box {
+            width: 30px;
+            height: 30px;
+            background-color: pink;
+        }
+        .dark-green {
+            background-color: darkgreen;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="gridContainer">
+        <!-- 64 divs will be generated here by JavaScript -->
+    </div>
+    <input type="text" id="numberInput" placeholder="Enter 8 comma-separated numbers (0-255)">
+        <button onclick="displayBinaryGrid()">Display Binary Grid</button>
+    </div>
+
+    <script>
+        // Create 64 divs for the 8x8 grid
+        const container = document.getElementById('gridContainer');
+        for (let i = 0; i < 64; i++) {
+            const div = document.createElement('div');
+            div.className = 'box';
+            div.id = `box${i}`;
+            container.appendChild(div);
+        }
+
+        function displayBinaryGrid() {
+            const input = document.getElementById('numberInput').value;
+            const numbers = input.split(',').map(num => parseInt(num.trim(), 10));
+
+            if (numbers.length !== 8 || numbers.some(num => isNaN(num) || num < 0 || num > 255)) {
+                alert('Please enter exactly 8 numbers between 0 and 255, separated by commas.');
+                return;
+            }
+
+            numbers.forEach((number, rowIndex) => {
+                const binaryString = number.toString(2).padStart(8, '0');
+                for (let colIndex = 0; colIndex < 8; colIndex++) {
+                    const box = document.getElementById(`box${rowIndex * 8 + colIndex}`);
+                    box.className = binaryString[colIndex] === '1' ? 'box dark-green' : 'box';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

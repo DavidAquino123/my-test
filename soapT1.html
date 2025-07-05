@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOAP Note Builder</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    textarea, input { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    #output { white-space: pre-wrap; background: #f4f4f4; padding: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🩺 SOAP Note Builder</h1>
+
+  <form id="soapForm">
+    <label for="subjective">Subjective</label>
+    <textarea id="subjective" rows="3" placeholder="e.g., Patient reports fatigue and mild cough..."></textarea>
+
+    <label for="objective">Objective</label>
+    <textarea id="objective" rows="3" placeholder="e.g., Temp 99.1°F, HR 78, lungs clear..."></textarea>
+
+    <label for="assessment">Assessment</label>
+    <textarea id="assessment" rows="3" placeholder="e.g., Likely viral URI..."></textarea>
+
+    <label for="plan">Plan</label>
+    <textarea id="plan" rows="3" placeholder="e.g., Supportive care, fluids, rest..."></textarea>
+
+    <button type="button" onclick="generateSOAP()">Generate SOAP Note</button>
+  </form>
+
+  <h2>📝 Hydrated SOAP Note</h2>
+  <div id="output"></div>
+
+  <script>
+    function generateSOAP() {
+      const data = {
+        subjective: document.getElementById("subjective").value,
+        objective: document.getElementById("objective").value,
+        assessment: document.getElementById("assessment").value,
+        plan: document.getElementById("plan").value
+      };
+
+      const template = `
+S: {{subjective}}
+O: {{objective}}
+A: {{assessment}}
+P: {{plan}}
+      `;
+
+      const hydrated = template.replace(/{{(.*?)}}/g, (_, key) => data[key.trim()] || '');
+      document.getElementById("output").textContent = hydrated.trim();
+    }
+  </script>
+</body>
+</html>

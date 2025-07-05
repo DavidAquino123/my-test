@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Problem & Treatment Mapping</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Patient Problem & Treatment Mapping</h2>
+
+    <label for="problemSelect">Select a Patient Problem:</label>
+    <select id="problemSelect">
+        <option value="Hypertension">Hypertension</option>
+        <option value="Diabetes">Diabetes</option>
+        <option value="Asthma">Asthma</option>
+        <option value="Arthritis">Arthritis</option>
+    </select>
+
+    <label for="treatmentSelect">Select Active Treatment Plans:</label>
+    <select id="treatmentSelect" multiple>
+        <option value="Medication">Medication</option>
+        <option value="Lifestyle Changes">Lifestyle Changes</option>
+        <option value="Physical Therapy">Physical Therapy</option>
+        <option value="Dietary Adjustments">Dietary Adjustments</option>
+        <option value="Regular Checkups">Regular Checkups</option>
+    </select>
+
+    <button onclick="addMapping()">Add Mapping</button>
+
+    <h3>Stored Mappings:</h3>
+    <div id="output"></div>
+
+    <script>
+        let problemTreatmentMap = {}; // Dictionary to store mappings
+
+        function addMapping() {
+            let problem = document.getElementById("problemSelect").value;
+            let treatmentSelect = document.getElementById("treatmentSelect");
+            let selectedTreatments = Array.from(treatmentSelect.selectedOptions).map(option => option.value);
+
+            if (selectedTreatments.length === 0) {
+                alert("Please select at least one treatment plan.");
+                return;
+            }
+
+            // Store in dictionary with forward-slash delimited format
+            problemTreatmentMap[problem] = selectedTreatments.join("/");
+
+            displayMappings();
+        }
+
+        function displayMappings() {
+            let outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "<strong>Problem → Treatments</strong><br>";
+
+            for (let problem in problemTreatmentMap) {
+                outputDiv.innerHTML += `<p><strong>${problem}:</strong> ${problemTreatmentMap[problem]}</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>

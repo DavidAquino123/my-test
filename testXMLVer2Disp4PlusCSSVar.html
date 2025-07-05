@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Diagnosis Viewer</title>
+    <style>
+   /* Define CSS Variables */
+
+
+:root {
+    --primary-color: #8B5E3C; /* Warm Brown */
+    --secondary-color: #5F7A61; /* Muted Green */
+    --danger-color: #D9534F; /* Soft Red */
+    --background-color: #F2E9E4; /* Light Beige */
+    --container-bg: #FFF8F0; /* Matte Cream */
+    --text-color: #4A3F35; /* Dark Brown */
+    --input-bg: #FAF3E0; /* Soft Beige */
+    --border-color: #C2A385; /* Light Brown */
+    --shadow-color: rgba(139, 94, 60, 0.2); /* Soft Brown Shadow */
+    --button-hover-opacity: 0.85;
+    --container-width: 650px;
+    --input-width: 97%;
+    --padding: 12px;
+}
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Wider Container with Right-Sided Margin */
+.container {
+    background: var(--container-bg);
+    padding: var(--padding);
+    border-radius: 10px;
+    box-shadow: 2px 4px 12px var(--shadow-color);
+    max-width: var(--container-width);
+    width: 100%;
+    margin-right: 50px; /* Adds right-sided margin */
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+}
+
+/* Adjusted Input and Textarea Width */
+input, textarea {
+    width: var(--input-width);
+    padding: var(--padding);
+    margin-top: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+    background: var(--input-bg);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(0, 140, 186, 0.3);
+}
+
+textarea {
+    height: 140px;
+    resize: none;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: var(--padding);
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    opacity: var(--button-hover-opacity);
+}
+
+.save-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.show-btn {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.clear-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* XML Output */
+#xmlOutput {
+    background-color: #f9f9f9;
+    border: 1px solid var(--border-color);
+    font-family: monospace;
+    height: 160px;
+    width: var(--input-width);
+    padding: var(--padding);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.process-btn {
+    background-color: #FF9800; /* Orange */
+    color: white;
+    width: 100%;
+    padding: var(--padding);
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.process-btn:hover {
+    opacity: var(--button-hover-opacity);
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diagnosis Information</h2>
+
+        <label for="dxName">Diagnosis Name:</label>
+        <input type="text" id="dxName" placeholder="Enter Diagnosis Name">
+
+        <label for="dxPlan">Diagnosis Plan:</label>
+        <textarea id="dxPlan" placeholder="Enter Diagnosis Plan"></textarea>
+
+        <button class="save-btn" onclick="saveDiagnosis()">Save Diagnosis</button>
+        <button class="show-btn" onclick="displayXML()">Show XML</button>
+        <button class="clear-btn" onclick="clearUI()">Clear UI</button>
+
+        <label for="xmlOutput">XML Output:</label>
+        <textarea id="xmlOutput" readonly></textarea>
+
+        <label for="humanReadableOutput">Human-Readable Output:</label>
+        <textarea id="humanReadableOutput"></textarea>
+
+        <button class="process-btn" onclick="processXML()">Process XML</button>
+
+
+    </div>
+
+    <script>
+        function saveDiagnosis() {
+            const dxName = document.getElementById("dxName").value.trim();
+            const dxPlan = document.getElementById("dxPlan").value.trim();
+
+            if (!dxName || !dxPlan) {
+                alert("Please enter both Diagnosis Name and Plan.");
+                return;
+            }
+
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+            diagnoses.push({ dxName, dxPlan });
+            localStorage.setItem("diagnoses", JSON.stringify(diagnoses));
+
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+        }
+
+        function displayXML() {
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+
+            if (diagnoses.length === 0) {
+                alert("No diagnoses found.");
+                return;
+            }
+
+            let xmlData = "<Diagnoses>\n";
+            diagnoses.forEach(d => {
+                xmlData += `  <Diagnosis>\n    <DxName>${d.dxName}</DxName>\n    <DxPlan>${d.dxPlan}</DxPlan>\n  </Diagnosis>\n`;
+            });
+            xmlData += "</Diagnoses>";
+
+            document.getElementById("xmlOutput").value = xmlData;
+        }
+
+        function clearUI() {
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+            document.getElementById("xmlOutput").value = "";
+            localStorage.removeItem("diagnoses");
+        }
+
+        function loadPreviousData() {
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+            if (diagnoses.length > 0) {
+                document.getElementById("dxName").value = diagnoses[diagnoses.length - 1].dxName;
+                document.getElementById("dxPlan").value = diagnoses[diagnoses.length - 1].dxPlan;
+            }
+        }
+        function processXML() {
+        // Get XML data from the textarea
+        const xmlText = document.getElementById("xmlOutput").value;
+
+        // Parse XML string into a DOM object
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+        // Extract all diagnoses
+        const diagnoses = xmlDoc.getElementsByTagName("Diagnosis");
+        let humanReadableText = "Diagnoses:\n\n";
+
+        for (let i = 0; i < diagnoses.length; i++) {
+            const dxName = diagnoses[i].getElementsByTagName("DxName")[0].textContent;
+            const dxPlan = diagnoses[i].getElementsByTagName("DxPlan")[0].textContent;
+
+            humanReadableText += `Diagnosis ${i + 1}:\n`;
+            humanReadableText += `Name: ${dxName}\n`;
+            humanReadableText += `Plan: ${dxPlan}\n\n`;
+        }
+
+    // Display the formatted text in the editable textarea
+            document.getElementById("humanReadableOutput").value = humanReadableText;
+        }
+
+    
+
+        window.onload = loadPreviousData;
+    </script>
+</body>
+</html>

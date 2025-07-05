@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Springtime Squares</title>
+    <style>
+        .square {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            background-color: #f3f4ed;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id="square1" class="square"></div>
+    <div id="square2" class="square"></div>
+    <button id="button1">Change Square 1</button>
+    <button id="button2">Change Square 2</button>
+
+    <script>
+        document.getElementById('button1').addEventListener('click', function() {
+            let square1 = document.getElementById('square1');
+            square1.style.backgroundColor = square1.style.backgroundColor === 'pink' ? 'lightgreen' : 'pink';
+        });
+
+        document.getElementById('button2').addEventListener('click', function() {
+            let square2 = document.getElementById('square2');
+            square2.style.backgroundColor = square2.style.backgroundColor === 'lightblue' ? 'lightcoral' : 'lightblue';
+        });
+    </script>
+</body>
+</html>

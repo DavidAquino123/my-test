@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Diagnosis Viewer</title>
+    <style>
+        /* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container with Right-Sided Margin */
+.container {
+    background: #fafafa; /* Matte white background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    margin-right: 50px; /* Adds right-sided margin */
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    color: #008CBA;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+}
+
+/* Adjusted Input and Textarea Width */
+input, textarea {
+    width: 95%; /* Prevents reaching the right edge */
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+    background: #ffffff; /* Slightly matte white */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input:focus, textarea:focus {
+    border-color: #008CBA;
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(0, 140, 186, 0.3);
+}
+
+textarea {
+    height: 120px;
+    resize: none;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.save-btn {
+    background-color: #008CBA;
+    color: white;
+}
+
+.show-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.clear-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+/* XML Output */
+#xmlOutput {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    font-family: monospace;
+    height: 150px;
+    width: 95%; /* Prevents reaching the right edge */
+    padding: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diagnosis Information</h2>
+
+        <label for="dxName">Diagnosis Name:</label>
+        <input type="text" id="dxName" placeholder="Enter Diagnosis Name">
+
+        <label for="dxPlan">Diagnosis Plan:</label>
+        <textarea id="dxPlan" placeholder="Enter Diagnosis Plan"></textarea>
+
+        <button class="save-btn" onclick="saveDiagnosis()">Save Diagnosis</button>
+        <button class="show-btn" onclick="displayXML()">Show XML</button>
+        <button class="clear-btn" onclick="clearUI()">Clear UI</button>
+
+        <label for="xmlOutput">XML Output:</label>
+        <textarea id="xmlOutput" readonly></textarea>
+    </div>
+
+    <script>
+        function saveDiagnosis() {
+            const dxName = document.getElementById("dxName").value.trim();
+            const dxPlan = document.getElementById("dxPlan").value.trim();
+
+            if (!dxName || !dxPlan) {
+                alert("Please enter both Diagnosis Name and Plan.");
+                return;
+            }
+
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+            diagnoses.push({ dxName, dxPlan });
+            localStorage.setItem("diagnoses", JSON.stringify(diagnoses));
+
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+        }
+
+        function displayXML() {
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+
+            if (diagnoses.length === 0) {
+                alert("No diagnoses found.");
+                return;
+            }
+
+            let xmlData = "<Diagnoses>\n";
+            diagnoses.forEach(d => {
+                xmlData += `  <Diagnosis>\n    <DxName>${d.dxName}</DxName>\n    <DxPlan>${d.dxPlan}</DxPlan>\n  </Diagnosis>\n`;
+            });
+            xmlData += "</Diagnoses>";
+
+            document.getElementById("xmlOutput").value = xmlData;
+        }
+
+        function clearUI() {
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+            document.getElementById("xmlOutput").value = "";
+            localStorage.removeItem("diagnoses");
+        }
+
+        function loadPreviousData() {
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+            if (diagnoses.length > 0) {
+                document.getElementById("dxName").value = diagnoses[diagnoses.length - 1].dxName;
+                document.getElementById("dxPlan").value = diagnoses[diagnoses.length - 1].dxPlan;
+            }
+        }
+
+        window.onload = loadPreviousData;
+    </script>
+</body>
+</html>

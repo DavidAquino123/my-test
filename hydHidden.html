@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi‑Select Hydration Example</title>
+  <style>
+    /* Hide the div containing the delimited text */
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden text repository with comma‑delimited options -->
+  <div id="hiddenMultiText" class="hidden">
+    Option1, Option2, Option3, Option4, Option5
+  </div>
+
+  <!-- Multi‑select element to be hydrated with options -->
+  <select id="myMultiSelect" multiple size="5">
+    <!-- Options will be dynamically added here -->
+  </select>
+  
+  <!-- Button to trigger the hydration -->
+  <button id="hydrateSelect">Populate Multi‑Select</button>
+  
+  <script>
+    // Add a click event listener to the button
+    document.getElementById("hydrateSelect").addEventListener("click", function() {
+      // Retrieve the delimited text from the hidden element
+      var hiddenText = document.getElementById("hiddenMultiText").textContent;
+      
+      // Split the text into an array using the comma delimiter
+      var optionsArray = hiddenText.split(",").map(function(item) {
+        return item.trim();
+      });
+      
+      // Get the multi‑select element
+      var multiSelect = document.getElementById("myMultiSelect");
+      
+      // Clear any existing options (if necessary)
+      multiSelect.innerHTML = "";
+      
+      // Loop through the array and create option elements
+      optionsArray.forEach(function(optionText) {
+        var option = document.createElement("option");
+        option.value = optionText; // Set the value
+        option.text = optionText;  // Set the display text
+        multiSelect.appendChild(option);
+      });
+    });
+  </script>
+
+</body>
+</html>

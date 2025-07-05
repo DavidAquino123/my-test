@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Problem List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f8fb;
+            color: #333;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        textarea, input {
+            width: 80%;
+            padding: 10px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .form-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .problem-box {
+            background-color: #ffffff;
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            width: 80%;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .problem-box label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .problem-box input, .problem-box textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ffb6c1;
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            background-color: #fffaf0;
+            transition: 0.3s;
+        }
+
+        .problem-box input:focus, .problem-box textarea:focus {
+            border-color: #ff69b4;
+            box-shadow: 0px 0px 5px rgba(255, 105, 180, 0.5);
+        }
+
+        .save-button {
+            background-color: #2ecc71;
+            margin-top: 20px;
+        }
+
+        .save-button:hover {
+            background-color: #27ae60;
+        }
+
+        .clear-button {
+            background-color: #e74c3c;
+            margin-top: 10px;
+        }
+
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        .add-button {
+            background-color: #f39c12;
+            margin-top: 10px;
+        }
+
+        .add-button:hover {
+            background-color: #e67e22;
+        }
+
+        .output-container {
+            margin-top: 20px;
+            width: 80%;
+            text-align: left;
+        }
+
+        #timestampSelect {
+            width: 80%;
+            padding: 10px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .formatted-output {
+            width: 80%;
+            height: 200px;
+            padding: 10px;
+            border: 2px solid #2ecc71;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #e8f5e9;
+            resize: none;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        .copy-button {
+            background-color: #8e44ad;
+            margin-top: 10px;
+        }
+
+        .copy-button:hover {
+            background-color: #732d91;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Healthcare Problem List Management</h2>
+    <textarea id="problemInput" placeholder="Enter problems, separated by new lines"></textarea>
+    <button onclick="generateForm()">Generate Form</button>
+    <div class="form-container" id="formContainer"></div>
+    <button class="add-button" onclick="addNewEntry()">Add New Entry</button>
+    <button class="save-button" onclick="saveToLocalStorage()">Save to Local Storage</button>
+
+    <div class="output-container">
+        <h3>Stored Entries</h3>
+        <select id="timestampSelect" onchange="hydrateForm()">
+            <option value="">Select a saved entry</option>
+        </select>
+        <button class="clear-button" onclick="clearLocalStorage()">Clear Local Storage</button>
+    </div>
+
+    <div class="output-container">
+        <h3>Formatted Output</h3>
+        <textarea id="formattedOutput" class="formatted-output" readonly placeholder="Generated formatted output will appear here..."></textarea>
+        <button onclick="generateFormattedOutput()">Generate Formatted Output</button>
+        <button onclick="generateCurrentFormattedOutput()">Generate Current Form Output</button>
+        <button class="copy-button" onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+    
+   
+    <div class="output-container">
+        <button onclick="showJsonData()">Show JSON Data</button>
+        <textarea id="jsonOutput" class="formatted-output" readonly placeholder="JSON data will appear here..."></textarea>
+    </div>
+
+    <script>
+        function generateForm() {
+            const problems = document.getElementById("problemInput").value.split("\n").filter(p => p.trim() !== "");
+            const formContainer = document.getElementById("formContainer");
+            formContainer.innerHTML = ""; // Clear previous form
+
+            problems.forEach(problem => {
+                const div = document.createElement("div");
+                div.className = "problem-box";
+                div.innerHTML = `
+                    <label>Problem:</label>
+                    <input type="text" value="${problem}" class="problem-input" />
+                    <label>Plan:</label>
+                    <textarea class="plan-input" placeholder="Enter treatment plan"></textarea>
+                `;
+                formContainer.appendChild(div);
+            });
+        }
+
+        function addNewEntry() {
+            const formContainer = document.getElementById("formContainer");
+            const div = document.createElement("div");
+            div.className = "problem-box";
+            div.innerHTML = `
+                <label>Problem:</label>
+                <input type="text" class="problem-input" placeholder="Enter new problem" />
+                <label>Plan:</label>
+                <textarea class="plan-input" placeholder="Enter treatment plan"></textarea>
+            `;
+            formContainer.appendChild(div);
+        }
+
+        function saveToLocalStorage() {
+            const problemBoxes = document.querySelectorAll(".problem-box");
+            const data = [];
+
+            problemBoxes.forEach(box => {
+                const problem = box.querySelector(".problem-input").value;
+                const plan = box.querySelector(".plan-input").value;
+                data.push({ problem, plan });
+            });
+
+            const timestamp = new Date().toLocaleString(); // Get current date & time
+            const storedData = JSON.parse(localStorage.getItem("healthcareProblems")) || {};
+            storedData[timestamp] = data;
+
+            localStorage.setItem("healthcareProblems", JSON.stringify(storedData));
+            alert("Problems and treatment plans saved successfully!");
+
+            updateTimestampDropdown();
+        }
+
+        function updateTimestampDropdown() {
+            const storedData = JSON.parse(localStorage.getItem("healthcareProblems")) || {};
+            const timestampSelect = document.getElementById("timestampSelect");
+
+            timestampSelect.innerHTML = '<option value="">Select a saved entry</option>';
+            Object.keys(storedData).forEach(timestamp => {
+                const option = document.createElement("option");
+                option.value = timestamp;
+                option.textContent = timestamp;
+                timestampSelect.appendChild(option);
+            });
+        }
+
+        function hydrateForm() {
+            const selectedTimestamp = document.getElementById("timestampSelect").value;
+            const storedData = JSON.parse(localStorage.getItem("healthcareProblems")) || {};
+            const formContainer = document.getElementById("formContainer");
+
+            if (!selectedTimestamp || !storedData[selectedTimestamp]) {
+                formContainer.innerHTML = "<p>No stored data found.</p>";
+                return;
+            }
+
+            formContainer.innerHTML = ""; // Clear previous form
+
+            storedData[selectedTimestamp].forEach(entry => {
+                const div = document.createElement("div");
+                div.className = "problem-box";
+                div.innerHTML = `
+                    <label>Problem:</label>
+                    <input type="text" value="${entry.problem}" class="problem-input" />
+                    <label>Plan:</label>
+                    <textarea class="plan-input">${entry.plan}</textarea>
+                `;
+                formContainer.appendChild(div);
+            });
+        }
+
+        
+        function generateFormattedOutput() {
+            const storedData = JSON.parse(localStorage.getItem("healthcareProblems")) || {};
+            const outputBox = document.getElementById("formattedOutput");
+
+            if (Object.keys(storedData).length === 0) {
+                outputBox.value = "No stored data available.";
+                return;
+            }
+
+            outputBox.value = Object.entries(storedData)
+                .map(([timestamp, entries]) => `Timestamp: ${timestamp}\n${entries.map(entry => `Problem: ${entry.problem}\nPlan: ${entry.plan}`).join("\n\n")}`)
+                .join("\n\n----------------------\n\n");
+        }
+
+        function copyToClipboard() {
+            const outputBox = document.getElementById("formattedOutput");
+            outputBox.select();
+            outputBox.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+
+            alert("Formatted output copied to clipboard!");
+        }
+
+        
+    
+
+        window.onload = updateTimestampDropdown;
+    </script>
+    <script>
+        function showJsonData() {
+            const storedData = JSON.parse(localStorage.getItem("healthcareProblems")) || {};
+            const jsonOutputBox = document.getElementById("jsonOutput");
+    
+            if (Object.keys(storedData).length === 0) {
+                jsonOutputBox.value = "No saved data available.";
+                return;
+            }
+    
+            jsonOutputBox.value = JSON.stringify(storedData, null, 4); // Pretty-print JSON
+        }
+    </script>
+
+<script>
+    function generateCurrentFormattedOutput() {
+        const problemBoxes = document.querySelectorAll(".problem-box");
+        const outputBox = document.getElementById("formattedOutput");
+
+        if (problemBoxes.length === 0) {
+            outputBox.value = "No problems entered.";
+            return;
+        }
+
+        let formattedText = "";
+
+        problemBoxes.forEach(box => {
+            const problemInput = box.querySelector(".problem-input");
+            const planInput = box.querySelector(".plan-input");
+
+            if (problemInput && planInput) {
+                const problem = problemInput.value.trim();
+                const plan = planInput.value.trim();
+                formattedText += `Problem: ${problem}\nPlan: ${plan}\n\n----------------------\n\n`;
+            }
+        });
+
+        outputBox.value = formattedText.trim();
+    }
+</script>
+<script>
+    function clearLocalStorage() {
+        if (confirm("Are you sure you want to clear all saved data? This action cannot be undone.")) {
+            localStorage.removeItem("healthcareProblems");
+            alert("All saved data has been cleared.");
+            updateTimestampDropdown(); // Refresh the dropdown
+            document.getElementById("formattedOutput").value = ""; // Clear formatted output
+            document.getElementById("formContainer").innerHTML = ""; // Clear the form
+        }
+    }
+</script>
+ 
+
+</body>
+</html>

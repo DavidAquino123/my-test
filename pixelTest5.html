@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Letters</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            gap: 1px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+        .grid-item {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .active { background-color: black; }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Pixel Art Letters</h2>
+    <div class="grid-container" id="grid"></div>
+
+    <button id="displayA">Display 'A'</button>
+    <button id="displayB">Display 'B'</button>
+    <button id="displayC">Display 'C'</button>
+    <button id="displayD">Display 'D'</button>
+    <button id="displayE">Display 'E'</button>
+
+    <script>
+        function generateGridElements() {
+            const gridContainer = document.getElementById('grid');
+            for (let i = 0; i < 64; i++) {
+                const cellElement = document.createElement('div');
+                cellElement.classList.add('grid-item');
+                cellElement.id = `cell-${i + 1}`;
+                gridContainer.appendChild(cellElement);
+            }
+        }
+
+        const patterns = {
+            A: [ 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1,
+                 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1 ],
+            B: [ 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+                 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+                 1, 1, 1, 1, 1, 0, 0, 0 ],
+            C: [ 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+                 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+                 0, 1, 1, 1, 1, 1, 1, 0 ],
+            D: [ 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,
+                 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                 1, 1, 1, 1, 1, 0, 0, 0 ],
+            E: [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+                 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+                 1, 1, 1, 1, 1, 1, 1, 1 ]
+        };
+
+        function applyPattern(letter) {
+            const pattern = patterns[letter];
+            pattern.forEach((cell, i) => {
+                const cellElement = document.getElementById(`cell-${i + 1}`);
+                if (cell === 1) {
+                    cellElement.classList.add('active');
+                } else {
+                    cellElement.classList.remove('active');
+                }
+            });
+        }
+
+        document.getElementById('displayA').addEventListener('click', () => applyPattern('A'));
+        document.getElementById('displayB').addEventListener('click', () => applyPattern('B'));
+        document.getElementById('displayC').addEventListener('click', () => applyPattern('C'));
+        document.getElementById('displayD').addEventListener('click', () => applyPattern('D'));
+        document.getElementById('displayE').addEventListener('click', () => applyPattern('E'));
+
+        generateGridElements();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOAP Note Builder with Voice</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    textarea, input { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 10px; padding: 6px 12px; font-size: 14px; }
+    .field-group { margin-bottom: 20px; }
+    #output { white-space: pre-wrap; background: #f4f4f4; padding: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🩺 SOAP Note Builder with Voice</h1>
+
+  <form id="soapForm">
+    <div class="field-group">
+      <label for="subjective">Subjective</label>
+      <textarea id="subjective" rows="3"></textarea>
+      <button type="button" onclick="startDictation('subjective')">🎙️ Start Dictation</button>
+    </div>
+
+    <div class="field-group">
+      <label for="objective">Objective</label>
+      <textarea id="objective" rows="3"></textarea>
+      <button type="button" onclick="startDictation('objective')">🎙️ Start Dictation</button>
+    </div>
+
+    <div class="field-group">
+      <label for="assessment">Assessment</label>
+      <textarea id="assessment" rows="3"></textarea>
+      <button type="button" onclick="startDictation('assessment')">🎙️ Start Dictation</button>
+    </div>
+
+    <div class="field-group">
+      <label for="plan">Plan</label>
+      <textarea id="plan" rows="3"></textarea>
+      <button type="button" onclick="startDictation('plan')">🎙️ Start Dictation</button>
+    </div>
+
+    <button type="button" onclick="generateSOAP()">🧾 Generate SOAP Note</button>
+  </form>
+
+  <h2>📝 Hydrated SOAP Note</h2>
+  <div id="output"></div>
+
+  <script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    function startDictation(fieldId) {
+      if (!SpeechRecognition) {
+        alert("Speech recognition not supported in this browser.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const field = document.getElementById(fieldId);
+        field.value += (field.value ? ' ' : '') + transcript;
+      };
+
+      recognition.onerror = (event) => {
+        alert("Error occurred in recognition: " + event.error);
+      };
+
+      recognition.start();
+    }
+
+    function generateSOAP() {
+      const data = {
+        subjective: document.getElementById("subjective").value,
+        objective: document.getElementById("objective").value,
+        assessment: document.getElementById("assessment").value,
+        plan: document.getElementById("plan").value
+      };
+
+      const template = `
+S: ${data.subjective}
+O: ${data.objective}
+A: ${data.assessment}
+P: ${data.plan}
+      `;
+
+      document.getElementById("output").textContent = template.trim();
+    }
+  </script>
+</body>
+</html>

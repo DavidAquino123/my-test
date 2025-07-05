@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Diagnosis Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        textarea, input { width: 100%; padding: 5px; margin-top: 5px; }
+        button { margin-top: 10px; padding: 8px; background-color: #008CBA; color: white; border: none; cursor: pointer; }
+        .clear-btn { background-color: #f44336; } /* Red button for clear */
+        .container { max-width: 500px; margin: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diagnosis Information</h2>
+
+        <label for="dxName">Diagnosis Name:</label>
+        <input type="text" id="dxName" placeholder="Enter Diagnosis Name">
+
+        <label for="dxPlan">Diagnosis Plan:</label>
+        <textarea id="dxPlan" placeholder="Enter Diagnosis Plan"></textarea>
+
+        <button onclick="saveDiagnosis()">Save Diagnosis</button>
+        <button onclick="displayXML()">Show XML</button>
+        <button class="clear-btn" onclick="clearUI()">Clear UI</button>
+
+        <label for="xmlOutput">XML Output:</label>
+        <textarea id="xmlOutput" readonly></textarea>
+    </div>
+
+    <script>
+        function saveDiagnosis() {
+            // Get user input
+            const dxName = document.getElementById("dxName").value.trim();
+            const dxPlan = document.getElementById("dxPlan").value.trim();
+
+            // Validate input
+            if (!dxName || !dxPlan) {
+                alert("Please enter both Diagnosis Name and Plan.");
+                return;
+            }
+
+            // Retrieve previous diagnoses from local storage
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+
+            // Add new diagnosis to the list
+            diagnoses.push({ dxName, dxPlan });
+
+            // Save updated list to local storage
+            localStorage.setItem("diagnoses", JSON.stringify(diagnoses));
+
+            // Clear input fields after saving
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+        }
+
+        function displayXML() {
+            // Retrieve diagnoses from local storage
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+
+            // Check if there are stored diagnoses
+            if (diagnoses.length === 0) {
+                alert("No diagnoses found.");
+                return;
+            }
+
+            // Generate XML for all stored diagnoses
+            let xmlData = "<Diagnoses>\n";
+            diagnoses.forEach(d => {
+                xmlData += `  <Diagnosis>\n    <DxName>${d.dxName}</DxName>\n    <DxPlan>${d.dxPlan}</DxPlan>\n  </Diagnosis>\n`;
+            });
+            xmlData += "</Diagnoses>";
+
+            // Display XML in the textarea
+            document.getElementById("xmlOutput").value = xmlData;
+        }
+
+        function clearUI() {
+            // Reset input fields and XML output
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+            document.getElementById("xmlOutput").value = "";
+
+            // Clear local storage
+            localStorage.removeItem("diagnoses");
+        }
+
+        function loadPreviousData() {
+            // Load previous diagnoses from local storage
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+
+            // If there are stored diagnoses, populate the input fields with the last entry
+            if (diagnoses.length > 0) {
+                document.getElementById("dxName").value = diagnoses[diagnoses.length - 1].dxName;
+                document.getElementById("dxPlan").value = diagnoses[diagnoses.length - 1].dxPlan;
+            }
+        }
+
+        // Load previous data when the page loads
+        window.onload = loadPreviousData;
+    </script>
+</body>
+</html>

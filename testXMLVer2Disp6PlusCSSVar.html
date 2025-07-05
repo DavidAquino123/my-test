@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Diagnosis Viewer</title>
+    <style>
+        /* Define CSS Variables */
+        :root {
+            --primary-color: #008CBA;
+            --secondary-color: #4CAF50;
+            --danger-color: #f44336;
+            --background-color: #f4f4f9;
+            --container-bg: #fafafa; /* Matte white */
+            --text-color: #333;
+            --input-bg: #ffffff;
+            --border-color: #ccc;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --button-hover-opacity: 0.85;
+            --container-width: 650px;
+            --input-width: 97%;
+            --padding: 12px;
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Wider Container with Right-Sided Margin */
+        .container {
+            background: var(--container-bg);
+            padding: var(--padding);
+            border-radius: 10px;
+            box-shadow: 2px 4px 12px var(--shadow-color);
+            max-width: var(--container-width);
+            width: 100%;
+            margin-right: 50px; /* Adds right-sided margin */
+        }
+
+        /* Title */
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        /* Input Fields */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        /* Adjusted Input and Textarea Width */
+        input, textarea {
+            width: var(--input-width);
+            padding: var(--padding);
+            margin-top: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            transition: 0.3s;
+            background: var(--input-bg);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0px 0px 5px rgba(0, 140, 186, 0.3);
+        }
+
+        textarea {
+            height: 140px;
+            resize: none;
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: var(--padding);
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            opacity: var(--button-hover-opacity);
+        }
+
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .show-btn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .clear-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .process-btn {
+            background-color: #FF9800; /* Orange */
+            color: white;
+        }
+
+        .copy-btn, .export-btn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* XML Output */
+        #xmlOutput {
+            background-color: #f9f9f9;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            height: 160px;
+            width: var(--input-width);
+            padding: var(--padding);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --primary-color: #1E88E5;
+            --secondary-color: #43A047;
+            --danger-color: #E53935;
+            --background-color: #121212;
+            --container-bg: #1E1E1E;
+            --text-color: #E0E0E0;
+            --input-bg: #2C2C2C;
+            --border-color: #444;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Theme Toggle Button */
+        .theme-btn {
+            background-color: #555;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diagnosis Information</h2>
+
+        <label for="dxName">Diagnosis Name:</label>
+        <input type="text" id="dxName" placeholder="Enter Diagnosis Name">
+
+        <label for="dxPlan">Diagnosis Plan:</label>
+        <textarea id="dxPlan" placeholder="Enter Diagnosis Plan"></textarea>
+
+        <button class="save-btn" onclick="saveDiagnosis()">Save Diagnosis</button>
+        <button class="show-btn" onclick="displayXML()">Show XML</button>
+        <button class="clear-btn" onclick="clearUI()">Clear UI</button>
+
+        <label for="xmlOutput">XML Output:</label>
+        <textarea id="xmlOutput" readonly></textarea>
+        <button class="copy-btn" onclick="copyToClipboard('xmlOutput')">Copy XML to Clipboard</button>
+        <button class="export-btn" onclick="exportToFile('xmlOutput', 'diagnosis.xml')">Export XML as File</button>
+
+        <label for="humanReadableOutput">Human-Readable Output:</label>
+        <textarea id="humanReadableOutput"></textarea>
+        <button class="process-btn" onclick="processXML()">Process XML</button>
+        <button class="copy-btn" onclick="copyToClipboard('humanReadableOutput')">Copy Text to Clipboard</button>
+        <button class="export-btn" onclick="exportToFile('humanReadableOutput', 'diagnosis.txt')">Export Text as File</button>
+
+        <button class="theme-btn" onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+
+    <script>
+                function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+        }
+
+        window.onload = loadTheme;
+        
+        function saveDiagnosis() {
+            const dxName = document.getElementById("dxName").value.trim();
+            const dxPlan = document.getElementById("dxPlan").value.trim();
+
+            if (!dxName || !dxPlan) {
+                alert("Please enter both Diagnosis Name and Plan.");
+                return;
+            }
+
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+            diagnoses.push({ dxName, dxPlan });
+            localStorage.setItem("diagnoses", JSON.stringify(diagnoses));
+
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+        }
+
+        function displayXML() {
+            let diagnoses = JSON.parse(localStorage.getItem("diagnoses")) || [];
+
+            if (diagnoses.length === 0) {
+                alert("No diagnoses found.");
+                return;
+            }
+
+            let xmlData = "<Diagnoses>\n";
+            diagnoses.forEach(d => {
+                xmlData += `  <Diagnosis>\n    <DxName>${d.dxName}</DxName>\n    <DxPlan>${d.dxPlan}</DxPlan>\n  </Diagnosis>\n`;
+            });
+            xmlData += "</Diagnoses>";
+
+            document.getElementById("xmlOutput").value = xmlData;
+        }
+
+        function processXML() {
+            const xmlText = document.getElementById("xmlOutput").value;
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+            const diagnoses = xmlDoc.getElementsByTagName("Diagnosis");
+            let humanReadableText = "Diagnoses:\n\n";
+
+            for (let i = 0; i < diagnoses.length; i++) {
+                const dxName = diagnoses[i].getElementsByTagName("DxName")[0].textContent;
+                const dxPlan = diagnoses[i].getElementsByTagName("DxPlan")[0].textContent;
+
+                humanReadableText += `Diagnosis ${i + 1}:\n`;
+                humanReadableText += `Name: ${dxName}\n`;
+                humanReadableText += `Plan: ${dxPlan}\n\n`;
+            }
+
+            document.getElementById("humanReadableOutput").value = humanReadableText;
+        }
+
+        function copyToClipboard(elementId) {
+            const textArea = document.getElementById(elementId);
+            textArea.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard!");
+        }
+
+        function exportToFile(elementId, fileName) {
+            const text = document.getElementById(elementId).value;
+            const blob = new Blob([text], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function clearUI() {
+            localStorage.removeItem("diagnoses");
+            document.getElementById("dxName").value = "";
+            document.getElementById("dxPlan").value = "";
+            document.getElementById("xmlOutput").value = "";
+            document.getElementById("humanReadableOutput").value = "";
+        }
+    </script>
+</body>
+</html>

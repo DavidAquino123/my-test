@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Text to Google Doc</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        textarea { width: 80%; height: 100px; padding: 10px; font-size: 16px; }
+        button { margin-top: 10px; padding: 10px 15px; font-size: 16px; cursor: pointer; }
+        #status { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Update Google Doc</h2>
+    <textarea id="inputText" placeholder="Enter text here..."></textarea>
+    <button onclick="sendToGoogleDoc()">Send to Doc</button>
+    <p id="status"></p>
+
+    <script>
+        function sendToGoogleDoc() {
+            var text = document.getElementById("inputText").value;
+            var url = "https://script.google.com/macros/s/AKfycbyDPolJAur6_UaGQfsEg8BZvPXBtSq9_a9KStbI_BsD1NnfFC09wyYYuyQqphk0wNX3Jg/exec"; // Replace with your actual web app URL
+
+            if (!text.trim()) {
+                document.getElementById("status").textContent = "Error: Input is empty!";
+                return;
+            }
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ text: text })
+            }).then(response => response.text())
+              .then(data => document.getElementById("status").textContent = "Response: " + data)
+              .catch(error => document.getElementById("status").textContent = "Error: " + error);
+        }
+    </script>
+</body>
+</html>
